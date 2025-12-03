@@ -1,0 +1,379 @@
+#include <iostream>
+#include <stack>                                                //A * B + C / D
+                                                                //((A+B) * (C-D)) / (E)
+                                                                //A-B+(C*(D^E)/F)
+#include <string>
+#include <algorithm>
+#include <limits>
+using namespace std;
+
+// --------------------- Operator Helpers --------------------- // 
+bool isOperator(char c) 
+{
+    return (c == '+' || c == '-' || c == '*' || c == '/' || c == '^');
+}
+
+int precedence(char c) 
+{
+    if(c == '^') 
+	   return 3;
+    if(c == '*' || c == '/')
+	   return 2;
+    if(c == '+' || c == '-') 
+	   return 1;
+      return -1;
+}
+
+// --------------------- Infix to Postfix --------------------- //
+string infixToPostfix(string infix)
+ {
+ 	system("color bd");
+    stack<char> s;
+    string postfix = "";
+
+    for(char c : infix) 
+	{
+        if(isalnum(c)) postfix += c;
+        else if(c == '(') s.push(c);
+        else if(c == ')')
+		  {
+            while(!s.empty() && s.top() != '(') 
+			{
+                postfix += s.top(); 
+				s.pop();
+            }
+            s.pop();
+        }
+        else if(isOperator(c))
+		 {
+            while(!s.empty() && precedence(s.top()) >= precedence(c)) 
+			{
+                postfix += s.top();
+				 s.pop();
+            }
+            s.push(c);
+        }
+    }
+
+    while(!s.empty()) 
+	{
+        postfix += s.top();
+        s.pop();
+    }
+    return postfix;
+}
+
+// --------------------- Infix to Prefix --------------------- //
+string infixToPrefix(string infix)
+ {
+    reverse(infix.begin(), 
+	infix.end());
+    for(int i = 0; i < infix.size(); i++) 
+	{
+        if(infix[i] == '(') infix[i] = ')';
+        else if(infix[i] == ')') infix[i] = '(';
+    }
+    string prefix = infixToPostfix(infix);
+    reverse(prefix.begin(), prefix.end());
+    return prefix;
+}
+
+// --------------------- POSTFIX â†’ INFIX --------------------- //
+string postfixToInfix(string postfix) 
+{
+    stack<string> st;
+
+    for(char c : postfix)
+	 {
+        if(isalnum(c))
+		 {
+            st.push(string(1, c));
+        }
+        else if(isOperator(c))
+		 {
+            string b = st.top(); st.pop();
+            string a = st.top(); st.pop();
+            string expr = "(" + a + string(1, c) + b + ")";
+            st.push(expr);
+        }
+    }
+    return st.top();
+}
+
+// --------------------- PREFIX â†’ INFIX --------------------- //
+string prefixToInfix(string prefix)
+ {
+    stack<string> st;
+
+    for(int i = prefix.size() - 1; i >= 0; i--) {
+        char c = prefix[i];
+
+        if(isalnum(c)) {
+            st.push(string(1, c));
+        }
+        else if(isOperator(c)) {
+            string a = st.top(); st.pop();
+            string b = st.top(); st.pop();
+            string expr = "(" + a + string(1, c) + b + ")";
+            st.push(expr);
+        }
+    }
+    return st.top();
+}
+
+// ------------------- PREFIX â†’ POSTFIX ------------------- //
+string prefixToPostfix(string prefix) 
+{
+    stack<string> st;
+
+    for(int i = prefix.size() - 1; i >= 0; i--) 
+	{
+        char c = prefix[i];
+
+        if(isalnum(c)) st.push(string(1, c));
+        else if(isOperator(c)) {
+            string a = st.top(); st.pop();
+            string b = st.top(); st.pop();
+            st.push(a + b + c);
+        }
+    }
+    return st.top();
+}
+
+// ------------------- POSTFIX â†’ PREFIX ------------------- //
+string postfixToPrefix(string postfix)
+ {
+    stack<string> st;
+
+    for(char c : postfix)
+	 {
+        if(isalnum(c)) st.push(string(1, c));
+        else if(isOperator(c)) 
+		{
+            string b = st.top(); st.pop();
+            string a = st.top(); st.pop();
+            st.push(string(1, c) + a + b);
+        }
+    }
+    return st.top();
+}
+
+// --------------------- BST Structure --------------------- //
+struct BSTNode 
+{
+    int data;
+    BSTNode* left;
+    BSTNode* right;
+    BSTNode(int val) { data = val; left = right = nullptr;
+	 }
+};
+
+BSTNode* insertBST(BSTNode* root, int val)
+ {
+		system("color 37");
+    if(!root) return new BSTNode(val);
+    if(val < root->data) root->left = insertBST(root->left, val);
+    else if(val > root->data) root->right = insertBST(root->right, val);
+    return root;
+}
+
+void inorderBST(BSTNode* root)
+ {
+    if(root) {
+        inorderBST(root->left);
+        cout << root->data << " ";
+        inorderBST(root->right);
+    }
+}
+void preorderBST(BSTNode* root)
+ {
+    if(root)
+	 {
+        cout << root->data << " ";
+        preorderBST(root->left);
+        preorderBST(root->right);
+    }
+}
+void postorderBST(BSTNode* root)
+ {
+    if(root) {
+        postorderBST(root->left);
+        postorderBST(root->right);
+        cout << root->data << " ";
+    }
+}
+
+// ----------- Safe Integer Input ----------- //
+int safeInputInt()
+ {
+    int x;
+    while(!(cin >> x))
+	 {
+        cout << "Invalid input! Enter an integer: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    return x;
+}
+
+// --------------------- MAIN PROGRAM --------------------- //
+int main() {
+            system("color ec") ;
+    int mainChoice;
+    do {
+    	          cout<< "                *___________________________________------------__________________________________ *\n";
+                  cout<< "                      *_______________________________________________________________________* \n ";
+                  cout<< "                          * ===============================================================*   \n ";
+                  cout<< "                                        STACK EXPRESSIONS CONVERSION        \n ";
+                  cout<< "                                              &  BST TRAVERSAL       \n ";
+                  cout<<"                           * ===============================================================*  \n ";
+                  cout<<"                       *_______________________________________________________________________* \n";
+                  cout<<"                 *___________________________________------------_________________________________ *\n";
+                  cout<<"                                                 Press Enter\n";
+                  cin.get();
+                  system("cls");   
+				     
+        cout << " \n \n\n" "                                                     ===== MAIN MENU =====\n\n";
+        cout << "                                                    1. Expression Conversion\n";
+        cout << "                                                    2. BST Traversal\n";
+        cout << "                                                    0. Exit\n";
+        cout << "                                                         Enter choice: ";
+        mainChoice = safeInputInt();
+
+        switch(mainChoice)
+		 {
+
+            case 1: 
+			{
+                                               
+                cout << "\n\n \n""                                         --- Expressions Conversion ---\n";
+               	cout<<"                                     %____________________________________%\n\n";
+                cout << "                                            1. Infix to Postfix\n";
+                cout << "                                            2. Infix to Prefix\n";
+                cout << "                                            3. Postfix to Infix\n";
+                cout << "                                            4. Prefix to Infix\n";
+                cout << "                                            5. Prefix to Postfix\n";
+                cout << "                                            6. Postfix to Prefix\n";
+                cout << "                                                 Enter choice: ";
+                int c = safeInputInt();
+
+                cin.ignore();
+                string expr;
+                cout << "Enter Expression: ";
+                getline(cin, expr);
+
+                switch(c) 
+				{
+                    case 1:
+                    	cout<<"                        ----------------------------------------------------\n";
+					    cout << "                                        Postfix: " << infixToPostfix(expr) << endl; break;
+					    cout<<"                        ----------------------------------------------------\n";	
+                    case 2: 
+					    	cout<<"                    ----------------------------------------------------\n";    
+						    cout << "                                     Prefix: " << infixToPrefix(expr) << endl; break;
+							cout<<"                    ----------------------------------------------------\n";
+							
+                    case 3: 
+                    	cout<<"                        ----------------------------------------------------\n";
+					    cout << "                                         Infix: " << postfixToInfix(expr) << endl; break;
+					    cout<<"                        ----------------------------------------------------\n";
+                    case 4: 
+                      	cout<<"                         ----------------------------------------------------\n";
+				    	cout <<  "                                          Infix: " << prefixToInfix(expr) << endl; break;
+					   	cout<<"                         ----------------------------------------------------\n";
+                    case 5:
+                    	cout<<"                         ----------------------------------------------------\n";
+					    cout << "                                         Postfix: " << prefixToPostfix(expr) << endl; break;
+					    cout<<"                         ----------------------------------------------------\n";
+					    
+                    case 6: 
+                    	cout<<"                          ----------------------------------------------------\n";
+					    cout << "                                           Prefix: " << postfixToPrefix(expr) << endl; break;
+					 	cout<<"                           ----------------------------------------------------\n";
+					    cout<<"                           ----------------------------------------------------\n";
+					    cout << "                                     Invalid choice!\n";
+						cout<<"                   ----------------------------------------------------\n";
+                }
+                break;
+            }
+
+            case 2:
+			 {
+                cout << "\n" "                                            --- BST Traversal ---\n";
+                cout <<      "                                         Enter number of nodes (max 50): ";
+                int n = safeInputInt();
+
+                //========== LIMIT CHECK ==========//
+                if(n > 50)
+				 {
+                    cout << "âŒ ERROR: Maximum allowed nodes is 50. Please try again.\n";
+                    break;  // return to main menu
+                }
+
+                BSTNode* root = nullptr;
+                for(int i = 0; i < n; i++) 
+				{
+                    cout << "Node " << i+1 << ": ";
+                    root = insertBST(root, safeInputInt());
+                }
+
+                int t;
+                do {
+                    cout << "                                        \nTraversal Options:\n";
+                    cout << "                                         1. Inorder\n";
+                    cout << "                                         2. Preorder\n";
+                    cout << "                                         3. Postorder\n";
+                    cout << "                                         4. All Traversals\n";
+                    cout << "                                         0. Back\n";
+                    cout << "                                               Choice: ";
+                    t = safeInputInt();
+
+                    if(t == 1)
+					 {
+					 cout<<  "                                        ----------------\n";
+					  cout << "                                             Inorder: ";
+					  cout<<  "                                       ----------------\n";
+					  inorderBST(root); 
+					  cout << endl;
+					   }
+                    else if(t == 2) 
+					{
+				     cout<<  "                                         ----------------\n";
+					 cout << "                                              Preorder: ";
+					 cout<<  "                                         ----------------\n";
+					 preorderBST(root); 
+					 cout << endl;
+					  }
+                    else if(t == 3) 
+					{ 
+					cout<<  "                                          ----------------\n";
+					cout << "                                               Postorder: ";
+					cout<<  "                                          ----------------\n";
+					 postorderBST(root);
+					  cout << endl; }
+                    else if(t == 4)
+					 {
+						cout<<"                               ----------------------------------------------------\n";
+                        cout << "                                           Inorder: "; inorderBST(root); cout << endl;
+                        cout << "                                           Preorder: "; preorderBST(root); cout << endl;
+                        cout << "                                           Postorder: "; postorderBST(root); cout << endl;
+                        cout<<"                               ----------------------------------------------------\n";
+                    }
+
+                } while(t != 0);
+
+                break;
+            }
+
+            case 0:
+                cout << "Exiting...\n";
+                break;
+
+            default:
+                cout << "Invalid choice!\n";
+        }
+
+    } while(mainChoice != 0);
+
+    return 0;
+}
